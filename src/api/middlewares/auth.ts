@@ -11,11 +11,11 @@ export interface CustomRequest extends Request {
 }
 
 export const authenticationMiddleware = async (
-  req: Request,
-  res: Response,
+  request: Request,
+  response: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.headers.authorization;
+  const authHeader = request.headers.authorization;
 
   const SECRET_KEY: Secret = process.env.JWT_SECRET || "anjay secret";
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -26,7 +26,7 @@ export const authenticationMiddleware = async (
   try {
     const decoded: any = jwt.verify(token, SECRET_KEY);
     const { _id, name, phoneNumber } = decoded;
-    (req as CustomRequest).user = { _id, name, phoneNumber };
+    (request as CustomRequest).user = { _id, name, phoneNumber };
     next();
   } catch (error) {
     throw new Unauthenticated("No access");
