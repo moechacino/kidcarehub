@@ -1,33 +1,59 @@
 import { NextFunction, Request, Response } from "express";
-import { CreateUserRequest, LoginUserRequest } from "../models/userModel";
+import {
+  CreateUserRequest,
+  LoginUserRequest,
+  UserResponse,
+} from "../models/userModel";
 import { UserService } from "../services/user-service";
+import { CustomRequest } from "../middlewares/auth";
 
 export class UserController {
-  static async register(req: Request, res: Response, next: NextFunction) {
+  static async register(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) {
     try {
-      const request: CreateUserRequest = req.body as CreateUserRequest;
-      const response = await UserService.register(request);
+      const createUserRequest: CreateUserRequest =
+        request.body as CreateUserRequest;
+      const createUserResponse = await UserService.register(createUserRequest);
 
-      res.status(201).json({
+      response.status(201).json({
         success: true,
-        data: response,
+        data: createUserResponse,
       });
     } catch (error) {
       next(error);
     }
   }
 
-  static async login(req: Request, res: Response, next: NextFunction) {
+  static async login(request: Request, response: Response, next: NextFunction) {
     try {
-      const request: LoginUserRequest = req.body as LoginUserRequest;
+      const loginUserRequest: LoginUserRequest =
+        request.body as LoginUserRequest;
 
-      const response = await UserService.login(request);
-      res.status(200).json({
+      const loginUserResponse = await UserService.login(loginUserRequest);
+      response.status(200).json({
         success: true,
-        data: response,
+        data: loginUserResponse,
       });
     } catch (error) {
       next(error);
     }
+  }
+
+  static async logout(
+    request: CustomRequest,
+    response: Response,
+    next: NextFunction
+  ) {
+    try {
+      const logoutUserResponse = await UserService.logout(request);
+
+      response.status(200).json({
+        success: true,
+        data: logoutUserResponse,
+      });
+    } catch (error) {}
   }
 }
