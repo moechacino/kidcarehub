@@ -6,7 +6,7 @@ import {
   UserResponse,
   toUserResponse,
 } from "../../models/userModel";
-import jwt from "jsonwebtoken";
+import jwt, { Secret } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { Validation } from "../../validations/validation";
 import { UserValidation } from "../../validations/userValidation";
@@ -14,7 +14,7 @@ import { Unauthenticated } from "../../errors/Unauthenticated";
 
 export class LoginService {
   static async login(request: LoginUserRequest): Promise<UserResponse> {
-    const SECRET_KEY = process.env.JWT_SECRET || "anjay_secret";
+    const SECRET_KEY: Secret = process.env.JWT_SECRET || "anjay_secret";
     const loginRequest = Validation.validate(UserValidation.LOGIN, request);
 
     let user = await prismaClient.user.findUnique({
