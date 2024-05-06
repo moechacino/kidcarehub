@@ -16,6 +16,7 @@ export const errorHandlerMiddleware = async (
       errors: error.message,
     });
   } else {
+    console.log(error);
     response.status(500).send("Something went wrong please try again");
   }
 };
