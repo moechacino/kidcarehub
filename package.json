@@ -15,7 +15,9 @@
   "jest": {
     "transform": {
       "^.+\\.[t|j]sx?$": "babel-jest"
-    }
+    },
+    "verbose": true,
+    "collectCoverage": true
   },
   "keywords": [],
   "author": "",
@@ -44,6 +46,7 @@
     "babel-jest": "^29.7.0",
     "jest": "^29.7.0",
     "nodemon": "^3.1.0",
+    "prettier": "3.2.5",
     "prisma": "^5.13.0",
     "supertest": "^7.0.0",
     "ts-node-dev": "^2.0.0",
