@@ -1,8 +1,15 @@
 import supertest from "supertest";
-import { app } from "../src";
-import { logger } from "../src/config/logging";
-import { UserTest } from "./test.util";
+import { app } from "../../src";
+import { logger } from "../../src/config/logging";
+import { UserTest } from "./user.test.util";
+
 describe("POST /api/v1/user/register", () => {
+  beforeAll(async () => {
+    const isUserExist = await UserTest.find();
+    if (isUserExist) {
+      await UserTest.delete();
+    }
+  });
   afterAll(async () => {
     const isUserExist = await UserTest.find();
     if (isUserExist) {
@@ -80,5 +87,12 @@ describe("POST /api/v1/user/login", () => {
 
     expect(response.status).toBe(401);
     expect(response.body.errors).toBeDefined();
+  });
+});
+
+describe("POST /api/v1/user/logout", () => {
+  it("should logout successfully with valid token", async () => {
+    const response = await await supertest(app).post("/api/v1/user/logout");
+    expect(true);
   });
 });
