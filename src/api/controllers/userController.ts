@@ -54,6 +54,8 @@ export class UserController {
         success: true,
         data: logoutUserResponse,
       });
-    } catch (error) {}
+    } catch (error) {
+      next(error);
+    }
   }
 }

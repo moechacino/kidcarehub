@@ -10,7 +10,7 @@ export type UserResponse = {
   id: number;
   phoneNumber: string;
   name: string;
-  token?: string;
+  token?: string | null;
 };
 
 export type LoginUserRequest = {

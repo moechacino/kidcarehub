@@ -23,12 +23,12 @@ export class LoginService {
       },
     });
 
-    if (!user) throw new NotFoundError("user is not found");
+    if (!user) throw new NotFoundError("phone number is not registered");
 
     const isMatch = await bcrypt.compare(loginRequest.password, user.password);
 
     if (!isMatch) {
-      throw new Unauthenticated("wrong password");
+      throw new Unauthenticated("phone number and password is wrong");
     }
 
     const token = jwt.sign(

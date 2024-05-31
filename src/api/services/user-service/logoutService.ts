@@ -18,7 +18,9 @@ export class LogoutService {
             token: null,
           },
         });
-        return toUserResponse(loggedOutUser);
+        const response = toUserResponse(loggedOutUser);
+        response.token = null;
+        return response;
       } catch (error) {
         throw new CustomAPIError(
           `Failed to logout user. Errors: ${error}`,

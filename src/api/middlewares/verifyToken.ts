@@ -20,10 +20,12 @@ export const verifyToken = async (
   if (user?.token) {
     if (token === user?.token) {
       next();
+    } else {
+      throw new Unauthenticated(
+        "Your Access Token is Expired. Please Login Again"
+      );
     }
-    throw new Unauthenticated(
-      "Your Access Token is Expired. Please Login Again"
-    );
+  } else {
+    throw new Unauthenticated("No access");
   }
-  throw new Unauthenticated("No access");
 };
