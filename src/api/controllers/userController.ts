@@ -16,7 +16,8 @@ export class UserController {
     try {
       const createUserRequest: CreateUserRequest =
         request.body as CreateUserRequest;
-      const createUserResponse = await UserService.register(createUserRequest);
+      const createUserResponse: UserResponse =
+        await UserService.register(createUserRequest);
 
       response.status(201).json({
         success: true,
