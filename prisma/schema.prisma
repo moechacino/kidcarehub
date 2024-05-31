@@ -14,42 +14,43 @@ datasource db {
 }
 
 model User {
-  id          Int     @unique @default(autoincrement())
-  phoneNumber String  @unique @db.VarChar(20)
-  name        String  @db.VarChar(100)
-  password    String  @db.VarChar(100)
-  photoProfile String @db.Text
-  token       String? @db.VarChar(300)
+  id           Int     @unique @default(autoincrement())
+  phoneNumber  String  @unique @db.VarChar(20)
+  name         String  @db.VarChar(100)
+  password     String  @db.VarChar(100)
+  photoProfile String? @db.Text
+  token        String? @db.VarChar(300)
 
   createdAt DateTime @default(now()) @db.Timestamp(0)
   updatedAt DateTime @updatedAt @db.Timestamp(0)
+
   @@map("user")
 }
 
 model Admin {
-  id  Int @unique @default(autoincrement())
-  username String @unique @db.VarChar(50)
-  password String @db.VarChar(100)
-  token String? @db.VarChar(300)
-  createdAt DateTime  @default(now()) @db.Timestamp(0)
-  
+  id        Int      @unique @default(autoincrement())
+  username  String   @unique @db.VarChar(50)
+  password  String   @db.VarChar(100)
+  token     String?  @db.VarChar(300)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+
   @@map("admin")
 }
 
 model Consultant {
-  id Int @unique @default(autoincrement())
-  name        String  @db.VarChar(100)
-  email String @db.VarChar(50)
-  phoneNumber String  @unique @db.VarChar(20)
-  username String @unique @db.VarChar(50)
-  password    String  @db.VarChar(100)
-  profession String @db.VarChar(30)
-  photoProfileUrl String @db.Text
-  alumnus String? @db.VarChar(30)
-  strNumber String @db.VarChar(25)
-  workPlace String? @db.VarChar(30)
+  id              Int     @unique @default(autoincrement())
+  name            String  @db.VarChar(100)
+  email           String  @db.VarChar(50)
+  phoneNumber     String  @unique @db.VarChar(20)
+  username        String  @unique @db.VarChar(50)
+  password        String  @db.VarChar(100)
+  profession      String  @db.VarChar(30)
+  photoProfileUrl String  @db.Text
+  alumnus         String? @db.VarChar(30)
+  strNumber       String  @db.VarChar(25)
+  workPlace       String? @db.VarChar(30)
 
-  token       String? @db.VarChar(300)
+  token     String?  @db.VarChar(300)
   createdAt DateTime @default(now()) @db.Timestamp(0)
   updatedAt DateTime @updatedAt @db.Timestamp(0)
 
@@ -57,29 +58,31 @@ model Consultant {
 }
 
 model Writer {
-  id       Int      @id @unique @default(autoincrement())
-  name     String   @db.VarChar(100)
-  phone    String   @unique @db.VarChar(20)
-  email    String   @unique @db.VarChar(100)
-  username String   @unique @db.VarChar(50)
-  password String   @db.VarChar(100)
-  token    String?  @db.VarChar(300)
-  articles Article[]
- createdAt DateTime @default(now()) @db.Timestamp(0)
-  updatedAt DateTime @updatedAt @db.Timestamp(0)
+  id        Int       @id @unique @default(autoincrement())
+  name      String    @db.VarChar(100)
+  phone     String    @unique @db.VarChar(20)
+  email     String    @unique @db.VarChar(100)
+  username  String    @unique @db.VarChar(50)
+  password  String    @db.VarChar(100)
+  token     String?   @db.VarChar(300)
+  articles  Article[]
+  createdAt DateTime  @default(now()) @db.Timestamp(0)
+  updatedAt DateTime  @updatedAt @db.Timestamp(0)
+
   @@map("writer")
 }
 
 model Article {
-  id       Int    @id @unique @default(autoincrement())
-  writerId Int
-  writer   Writer @relation(fields: [writerId], references: [id])
-  title String @db.VarChar(50)
-  thumbnail String @db.Text
-  textArticle TextArticle[]
+  id           Int            @id @unique @default(autoincrement())
+  writerId     Int
+  writer       Writer         @relation(fields: [writerId], references: [id])
+  title        String         @db.VarChar(50)
+  thumbnail    String         @db.Text
+  textArticle  TextArticle[]
   imageArticle ImageArticle[]
-  createdAt DateTime @default(now()) @db.Timestamp(0)
-  updatedAt DateTime @updatedAt @db.Timestamp(0)
+  createdAt    DateTime       @default(now()) @db.Timestamp(0)
+  updatedAt    DateTime       @updatedAt @db.Timestamp(0)
+
   @@map("article")
 }
 
@@ -98,8 +101,8 @@ model TextArticle {
 model ImageArticle {
   id        Int      @id @default(autoincrement())
   position  Int
-  url     String   @db.Text
-  alt String
+  url       String   @db.Text
+  alt       String
   article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
   articleId Int
   createdAt DateTime @default(now()) @db.Timestamp(0)
