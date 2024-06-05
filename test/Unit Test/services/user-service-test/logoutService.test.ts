@@ -24,13 +24,13 @@ describe("Logout Service", () => {
       name: "aksa",
       phoneNumber: "08123134707",
     };
-    const mockRequest = { user: mockUser } as CustomRequest;
+    const _id = mockUser._id;
     const updatedUser = { id: 123, token: null };
 
     (prismaClient.user.update as jest.Mock).mockResolvedValue(updatedUser);
     (toUserResponse as jest.Mock).mockReturnValue({ id: 123 });
 
-    const result = await LogoutService.logout(mockRequest);
+    const result = await LogoutService.logout(_id);
 
     expect(prismaClient.user.update).toHaveBeenCalledWith({
       where: { id: 123 },
@@ -41,24 +41,16 @@ describe("Logout Service", () => {
     expect(result).toEqual({ id: 123, token: null });
   });
 
-  it("should throw Unauthenticated error 401 if user is not authenticated", async () => {
-    const mockRequest = {} as CustomRequest;
-
-    expect(async () => await LogoutService.logout(mockRequest)).rejects.toThrow(
-      new Unauthenticated("User is not authenticated")
-    );
-  });
-
   it("should throw CustomAPIError if prismaClient update fails", async () => {
     const mockUser = { _id: 123 };
-    const mockRequest = { user: mockUser } as CustomRequest;
+    const _id = mockUser._id;
     const errorMessage = "Database error";
 
     (prismaClient.user.update as jest.Mock).mockRejectedValue(
       new Error(errorMessage)
     );
 
-    await expect(LogoutService.logout(mockRequest)).rejects.toThrow(
+    await expect(LogoutService.logout(_id)).rejects.toThrow(
       new CustomAPIError(
         `Failed to logout user. Errors: Error: ${errorMessage}`,
         500

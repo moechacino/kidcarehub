@@ -3,28 +3,26 @@ import {
   CreateUserRequest,
   LoginUserRequest,
   UserResponse,
-} from "../../../../src/api/models/userModel";
-import { UserService } from "../../../../src/api/services/user-service";
-import { UserController } from "../../../../src/api/controllers/userController";
-import { CustomRequest } from "../../../../src/api/middlewares/auth";
+} from "../../../src/api/models/userModel";
+import { UserService } from "../../../src/api/services/user-service";
+import { UserController } from "../../../src/api/controllers/userController";
+import { CustomRequest } from "../../../src/api/middlewares/auth";
 
-jest.mock("../../../../src/api/services/user-service");
+jest.mock("../../../src/api/services/user-service");
 describe("UserController Test", () => {
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let mockNext: NextFunction;
 
   beforeEach(() => {
+    jest.clearAllMocks();
     mockRequest = {};
     mockResponse = {
+      cookie: jest.fn(),
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     } as Partial<Response>;
     mockNext = jest.fn();
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
   });
 
   describe("register user", () => {
@@ -93,6 +91,7 @@ describe("UserController Test", () => {
         id: 1,
         name: "John Doe",
         phoneNumber: "081234",
+        token: "thisIsToken",
       };
 
       mockRequest.body = loginUserRequest;
@@ -106,6 +105,13 @@ describe("UserController Test", () => {
       );
 
       expect(UserService.login).toHaveBeenCalledWith(loginUserRequest);
+      expect(mockResponse.cookie).toHaveBeenCalledWith(
+        "token",
+        loginUserResponse.token,
+        {
+          maxAge: 1000 * 60 * 60 * 2,
+        }
+      );
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
         success: true,
@@ -157,7 +163,7 @@ describe("UserController Test", () => {
         mockNext
       );
 
-      expect(UserService.logout).toHaveBeenCalledWith(mockRequest);
+      expect(UserService.logout).toHaveBeenCalledWith(mockRequest.user?._id);
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
         success: true,
