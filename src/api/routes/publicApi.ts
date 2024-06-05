@@ -2,6 +2,7 @@ import express from "express";
 import { UserController } from "../controllers/userController";
 
 export const publicRouter = express.Router();
-publicRouter.route("/api/v1/user/register").post(UserController.register);
-publicRouter.route("/api/v1/user/login").post(UserController.login);
-publicRouter.route("/api/v1/user/logout").post(UserController.logout);
+
+publicRouter.route("/user/register").post(UserController.register);
+publicRouter.route("/user/login").post(UserController.login);
+publicRouter.route("/user/logout").post(UserController.logout);
