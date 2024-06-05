@@ -7,6 +7,7 @@ export interface CustomRequest extends Request {
     _id: number;
     name: string;
     phoneNumber: string;
+    role: string;
   };
 }
 
@@ -25,8 +26,8 @@ export const authenticationMiddleware = async (
 
   try {
     const decoded: any = jwt.verify(token, SECRET_KEY);
-    const { _id, name, phoneNumber } = decoded;
-    (request as CustomRequest).user = { _id, name, phoneNumber };
+    const { _id, name, phoneNumber, role } = decoded;
+    (request as CustomRequest).user = { _id, name, phoneNumber, role };
     next();
   } catch (error) {
     throw new Unauthenticated("No access");
