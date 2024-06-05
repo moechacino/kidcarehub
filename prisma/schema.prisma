@@ -78,6 +78,7 @@ model Article {
   writer       Writer         @relation(fields: [writerId], references: [id])
   title        String         @db.VarChar(50)
   thumbnail    String         @db.Text
+  thumbnail_alt String
   textArticle  TextArticle[]
   imageArticle ImageArticle[]
   createdAt    DateTime       @default(now()) @db.Timestamp(0)
