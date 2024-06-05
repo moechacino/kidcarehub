@@ -282,7 +282,9 @@ export class EditArticleService {
       rawRequest
     );
 
-    const { thumbnail, newImage } = request.files!;
+    const { thumbnail, newImage } = request.files as {
+      [fieldname: string]: Express.Multer.File[];
+    };
 
     // --------- end of VALIDATION ----------
 

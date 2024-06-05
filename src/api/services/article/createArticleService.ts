@@ -28,7 +28,9 @@ export class CreateArticleService {
     const bodyRequest: CreateArticleRequest =
       request.body as CreateArticleRequest;
 
-    const { thumbnail, image } = request.files!;
+    const { thumbnail, image } = request.files as {
+      [fieldname: string]: Express.Multer.File[];
+    };
     const thumbnail_alt = thumbnail[0].filename;
     const thumbnailUrl = `http://example.com/${thumbnail_alt}`;
 
