@@ -17,7 +17,7 @@ export class UserService {
     return LoginService.login(request);
   }
 
-  static async logout(request: CustomRequest): Promise<UserResponse> {
-    return LogoutService.logout(request);
+  static async logout(_id: number): Promise<UserResponse> {
+    return LogoutService.logout(_id);
   }
 }

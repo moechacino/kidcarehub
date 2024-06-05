@@ -36,6 +36,7 @@ export class LoginService {
         _id: user.id,
         name: user.name,
         phoneNumber: user.phoneNumber,
+        role: "user",
       },
       SECRET_KEY,
       {
