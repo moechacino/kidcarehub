@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ArticleMulterRequest } from "../models/multerModel";
-import { ArticleService } from "../services/article";
+import { ArticleService } from "../services/article-service";
 import { BadRequestError } from "../errors/BadRequestError";
 import { Unauthenticated } from "../errors/Unauthenticated";
 import { CustomRequest } from "../middlewares/auth";
@@ -28,9 +28,14 @@ export class articleController {
 
     sort = (sort as string) || "recent";
     search = (search as string) || "";
+    const pageStr: string | undefined =
+      typeof request.query.page === "string" ? request.query.page : undefined;
+    const takeStr: string | undefined =
+      typeof request.query.take === "string" ? request.query.take : undefined;
+
     //---------- pagination --------------
-    const page: number = Number(request.query.page) || 1;
-    const take: number = Number(request.query.take) || 16;
+    const page: number = pageStr ? parseInt(pageStr, 10) || 1 : 1;
+    const take: number = takeStr ? parseInt(takeStr, 10) || 16 : 16;
     const skip: number = (page - 1) * take;
     //------------------------------------
 
