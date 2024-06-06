@@ -8,8 +8,16 @@ export const errorHandlerMiddleware = async (
   next: NextFunction
 ) => {
   if (error instanceof ZodError) {
+    const formattedErrors = error.errors.map((err) => {
+      return {
+        path: err.path.join("."),
+        message: err.message,
+        code: err.code,
+      };
+    });
+
     response.status(400).json({
-      errors: `Validation Error : ${JSON.stringify(error)}`,
+      errors: formattedErrors,
     });
   } else if (error instanceof CustomAPIError) {
     response.status(error.statusCode).json({
