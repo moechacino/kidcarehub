@@ -1,6 +1,6 @@
 import { ArticleMulterRequest } from "../../../../src/api/models/multerModel";
 import { Readable } from "stream";
-import { ArticleService } from "../../../../src/api/services/article";
+import { ArticleService } from "../../../../src/api/services/article-service";
 import { toArticleResponse } from "../../../../src/api/models/articleModels";
 import { findMissingNumbersInArray } from "../../../../src/api/utils/findMissingNumbersInArray";
 import { articleJsonParseUtils } from "../../../../src/api/utils/articleJsonParseUtils";

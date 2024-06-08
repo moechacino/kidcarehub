@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { NotFoundError } from "../../../../src/api/errors/NotFoundError";
 import { prismaClient } from "../../../../src/config/database";
-import { ArticleService } from "../../../../src/api/services/article";
+import { ArticleService } from "../../../../src/api/services/article-service";
 import { toArticleResponse } from "../../../../src/api/models/articleModels";
 
 jest.mock("fs");

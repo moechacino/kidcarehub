@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 
 import { Unauthenticated } from "../../../src/api/errors/Unauthenticated";
@@ -44,7 +44,7 @@ describe("authentication Middleware Test", () => {
     mockRequest.headers!.authorization = "Bearer invalid_token";
 
     (jwt.verify as jest.Mock).mockImplementation(() => {
-      throw new Error("invalid token");
+      throw new JsonWebTokenError("invalid token");
     });
 
     await expect(

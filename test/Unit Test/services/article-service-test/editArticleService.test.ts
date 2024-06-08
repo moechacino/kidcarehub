@@ -1,5 +1,5 @@
 import { ArticleMulterRequest } from "../../../../src/api/models/multerModel";
-import { ArticleService } from "../../../../src/api/services/article";
+import { ArticleService } from "../../../../src/api/services/article-service";
 import { Validation } from "../../../../src/api/validations/validation";
 import { prismaClient } from "../../../../src/config/database";
 import { Request, Response, NextFunction } from "express";

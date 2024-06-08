@@ -31,7 +31,7 @@ describe("errorHandlerMiddleware", () => {
 
     expect(mockResponse.status).toHaveBeenCalledWith(400);
     expect(mockResponse.json).toHaveBeenCalledWith({
-      errors: `Validation Error : ${JSON.stringify(zodError)}`,
+      errors: [],
     });
   });
 

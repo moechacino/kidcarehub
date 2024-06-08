@@ -1,5 +1,5 @@
 import { NotFoundError } from "../../../../src/api/errors/NotFoundError";
-import { ArticleService } from "../../../../src/api/services/article";
+import { ArticleService } from "../../../../src/api/services/article-service";
 import { prismaClient } from "../../../../src/config/database";
 
 jest.mock("../../../../src/config/database", () => ({
