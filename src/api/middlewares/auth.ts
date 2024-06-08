@@ -20,9 +20,9 @@ export const authenticationMiddleware = async (
   const SECRET_KEY: Secret = process.env.JWT_SECRET || "anjay secret";
 
   let token: string;
-
-  if (request.cookies["token"]) {
-    token = request.cookies["token"];
+  const cookiesToken = request.cookies?.["token"] || null;
+  if (cookiesToken) {
+    token = cookiesToken;
   } else {
     const authHeader = request.headers.authorization || null;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
