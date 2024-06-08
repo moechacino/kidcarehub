@@ -11,6 +11,7 @@ import { NotFoundError } from "../../errors/NotFoundError";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Unauthenticated } from "../../errors/Unauthenticated";
+import { session_option_dev } from "../../../config/session-config";
 export class LoginService {
   static async login(request: LoginWriterRequest): Promise<WriterResponse> {
     const SECRET_KEY: Secret = process.env.JWT_SECRET || "anjay_secret";
@@ -38,9 +39,7 @@ export class LoginService {
         role: "writer",
       },
       SECRET_KEY,
-      {
-        expiresIn: "5h",
-      }
+      session_option_dev
     );
 
     writer = await prismaClient.writer.update({

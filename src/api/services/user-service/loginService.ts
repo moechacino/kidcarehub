@@ -11,6 +11,7 @@ import bcrypt from "bcrypt";
 import { Validation } from "../../validations/validation";
 import { UserValidation } from "../../validations/userValidation";
 import { Unauthenticated } from "../../errors/Unauthenticated";
+import { session_option_dev } from "../../../config/session-config";
 
 export class LoginService {
   static async login(request: LoginUserRequest): Promise<UserResponse> {
@@ -39,9 +40,7 @@ export class LoginService {
         role: "user",
       },
       SECRET_KEY,
-      {
-        expiresIn: "36000",
-      }
+      session_option_dev
     );
     user = await prismaClient.user.update({
       where: { id: user.id },
