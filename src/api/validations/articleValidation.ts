@@ -8,11 +8,7 @@ export class ArticleValidation {
         message: "Title is required and should be at least 1 character long.",
       })
       .max(50, { message: "Title should not exceed 50 characters." }),
-    thumbnail: z.custom(
-      (value) =>
-        typeof value === "object" && value !== null && "filename" in value,
-      { message: "Thumbnail is required and should be a file object." }
-    ),
+
     textArticle: z.string().refine(
       (value) => {
         try {
@@ -51,11 +47,7 @@ export class ArticleValidation {
         message: "Title is required and should be at least 1 character long.",
       })
       .max(50, { message: "Title should not exceed 50 characters." }),
-    thumbnail: z.custom(
-      (value) =>
-        typeof value === "object" && value !== null && "filename" in value,
-      { message: "Thumbnail is required and should be a file object." }
-    ),
+
     textArticle: z.string().refine(
       (value) => {
         try {
@@ -66,8 +58,8 @@ export class ArticleValidation {
               (item) =>
                 typeof item === "object" &&
                 item !== null &&
-                typeof item.id === "number" &&
-                Number.isInteger(item.id) &&
+                (item.id === undefined ||
+                  (typeof item.id === "number" && Number.isInteger(item.id))) &&
                 item.position !== null &&
                 item.position !== undefined &&
                 typeof item.position === "number" &&
