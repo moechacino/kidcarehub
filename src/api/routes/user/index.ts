@@ -9,6 +9,6 @@ userRouter.route("/register").post(UserController.register);
 userRouter.route("/login").post(UserController.login);
 userRouter
   .route("/logout")
-  .post(authenticationMiddleware, verifyToken, UserController.logout);
+  .patch(authenticationMiddleware, verifyToken, UserController.logout);
 
 export default userRouter;
