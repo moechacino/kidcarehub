@@ -6,8 +6,10 @@ import { CustomAPIError } from "../errors/CustomAPIError";
 export interface CustomRequest extends Request {
   user?: {
     _id: number;
-    name: string;
-    phoneNumber: string;
+    name?: string;
+    phoneNumber?: string;
+    username?: string;
+    email?: string;
     role: string;
   };
 }
@@ -33,9 +35,20 @@ export const authenticationMiddleware = async (
   }
   try {
     const decoded: any = jwt.verify(token, SECRET_KEY);
-    const { _id, name, phoneNumber, role } = decoded;
-    (request as CustomRequest).user = { _id, name, phoneNumber, role };
-    next();
+    const { role } = decoded;
+    if (role === "user") {
+      const { _id, name, phoneNumber } = decoded;
+      (request as CustomRequest).user = { _id, name, phoneNumber, role };
+      next();
+    } else if (role === "writer") {
+      const { _id, username, name, email } = decoded;
+      (request as CustomRequest).user = { _id, username, name, email, role };
+      next();
+    } else if (role === "admin") {
+      const { _id, username } = decoded;
+      (request as CustomRequest).user = { _id, username, role };
+      next();
+    }
   } catch (err) {
     if (err instanceof jwt.TokenExpiredError) {
       throw new Unauthenticated("Token is expired");

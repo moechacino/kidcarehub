@@ -10,16 +10,32 @@ export const verifyToken = async (
 ) => {
   const authHeader = request.headers.authorization;
   const _id = request.user?._id;
+  const role = request.user?.role;
 
   const token = authHeader?.split(" ")[1];
-  const user = await prismaClient.user.findUnique({
-    where: {
-      id: _id,
-    },
-  });
+  let authenticatedUser;
+  if (role === "user") {
+    authenticatedUser = await prismaClient.user.findUnique({
+      where: {
+        id: _id,
+      },
+    });
+  } else if (role === "writer") {
+    authenticatedUser = await prismaClient.writer.findUnique({
+      where: {
+        id: _id,
+      },
+    });
+  } else if (role === "admin") {
+    authenticatedUser = await prismaClient.admin.findUnique({
+      where: {
+        id: _id,
+      },
+    });
+  }
 
-  if (user?.token) {
-    if (token === user?.token) {
+  if (authenticatedUser!.token) {
+    if (token === authenticatedUser!.token) {
       next();
     } else {
       throw new Unauthenticated(
