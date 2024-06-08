@@ -17,6 +17,11 @@ writerRouter
 writerRouter.route("/login").post(WriterController.login);
 writerRouter
   .route("/logout")
-  .patch(authenticationMiddleware, verifyToken, WriterController.logout);
+  .patch(
+    authenticationMiddleware,
+    verifyToken,
+    OnlyAccessedBy.writer,
+    WriterController.logout
+  );
 
 export default writerRouter;
