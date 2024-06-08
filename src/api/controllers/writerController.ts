@@ -36,10 +36,6 @@ export class WriterController {
       const loginResponse: WriterResponse =
         await WriterService.login(loginRequest);
 
-      response.cookie("token", loginResponse.token!, {
-        maxAge: 1000 * 60 * 60 * 2,
-      });
-
       response.status(200).json({
         success: true,
         data: loginResponse,

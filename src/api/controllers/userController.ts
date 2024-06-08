@@ -7,6 +7,7 @@ import {
 import { UserService } from "../services/user-service";
 import { CustomRequest } from "../middlewares/auth";
 import { Unauthenticated } from "../errors/Unauthenticated";
+import { session_option_prod } from "../../config/session-config";
 
 export class UserController {
   static async register(
@@ -35,10 +36,6 @@ export class UserController {
         request.body as LoginUserRequest;
 
       const loginUserResponse = await UserService.login(loginUserRequest);
-
-      response.cookie("token", loginUserResponse.token!, {
-        maxAge: 1000 * 60 * 60 * 2,
-      });
 
       response.status(200).json({
         success: true,
