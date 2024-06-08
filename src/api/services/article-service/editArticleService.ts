@@ -13,6 +13,7 @@ import { articleCombineData } from "../../utils/articleCombineData";
 import { findMissingNumbersInArray } from "../../utils/findMissingNumbersInArray";
 import path from "path";
 import fs from "fs";
+import { BadRequestError } from "../../errors/BadRequestError";
 
 class EditArticleServiceUtils {
   static async updateDataText(
@@ -24,8 +25,8 @@ class EditArticleServiceUtils {
       async (prismaClient) => {
         for (const val of arrText) {
           if (val.id) {
-            const text = await prismaClient.textArticle.findUnique({
-              where: { id: val.id },
+            const text = await prismaClient.textArticle.findFirst({
+              where: { id: val.id, articleId: articleId },
             });
             if (text) {
               const updatedText = await prismaClient.textArticle.update({
@@ -43,21 +44,23 @@ class EditArticleServiceUtils {
 
               newTexts.push(updatedText);
             } else {
-              const newText = await prismaClient.textArticle.create({
-                data: {
-                  position: val.position,
-                  text: val.text!,
-                  article: { connect: { id: articleId } },
-                },
-                select: {
-                  id: true,
-                  text: true,
-                  position: true,
-                },
-              });
-
-              newTexts.push(newText);
+              throw new NotFoundError(`text with id ${val.id} is not found`);
             }
+          } else {
+            const newText = await prismaClient.textArticle.create({
+              data: {
+                position: val.position,
+                text: val.text!,
+                article: { connect: { id: articleId } },
+              },
+              select: {
+                id: true,
+                text: true,
+                position: true,
+              },
+            });
+
+            newTexts.push(newText);
           }
         }
 
@@ -68,25 +71,33 @@ class EditArticleServiceUtils {
   }
 
   static async updateExistingImages(
-    arrImage: ImageOrTextArticle[]
+    arrImage: ImageOrTextArticle[],
+    articleId: number
   ): Promise<ImageOrTextArticle[]> {
     let updatedExistingImages: ImageOrTextArticle[] = [];
     const updateExistingImagesTransaction = await prismaClient.$transaction(
       async (prismaClient) => {
         for (const val of arrImage) {
-          const updatedImage = await prismaClient.imageArticle.update({
-            where: { id: val.id },
-            data: {
-              position: val.position,
-            },
-            select: {
-              id: true,
-              position: true,
-              url: true,
-              alt: true,
-            },
+          const isExist = await prismaClient.imageArticle.findFirst({
+            where: { id: val.id, articleId: articleId },
           });
-          updatedExistingImages.push(updatedImage);
+          if (isExist) {
+            const updatedImage = await prismaClient.imageArticle.update({
+              where: { id: val.id },
+              data: {
+                position: val.position,
+              },
+              select: {
+                id: true,
+                position: true,
+                url: true,
+                alt: true,
+              },
+            });
+            updatedExistingImages.push(updatedImage);
+          } else {
+            throw new NotFoundError(`image with id ${val.id} is not found`);
+          }
         }
         return updatedExistingImages;
       }
@@ -267,13 +278,27 @@ export class EditArticleService {
     request: ArticleMulterRequest
   ): Promise<ArticleResponse> {
     // --------- VALIDATION ----------
+    // ----- CHECK IS ARTICLE EXIST
     const { articleId } = request.params;
-    const { title, texts, images } = request.body;
+    if (isNaN(Number(articleId)))
+      throw new BadRequestError("id must be number");
+
+    const article = await prismaClient.article.findUnique({
+      where: { id: parseInt(articleId) },
+      select: {
+        id: true,
+        thumbnail_alt: true,
+      },
+    });
+    if (!article)
+      throw new NotFoundError(`article with an id ${articleId} is not found`);
+    // -----end CHECK
+    const { title, textArticle, images } = request.body;
 
     const rawRequest = {
-      articleId,
+      articleId: parseInt(articleId),
       title,
-      textArticle: texts,
+      textArticle: textArticle,
       imageArticle: images,
     };
 
@@ -287,18 +312,6 @@ export class EditArticleService {
     };
 
     // --------- end of VALIDATION ----------
-
-    // ----- CHECK IS ARTICLE EXIST
-    const article = await prismaClient.article.findUnique({
-      where: { id: parseInt(validatedRequest.articleId) },
-      select: {
-        id: true,
-        thumbnail_alt: true,
-      },
-    });
-    if (!article)
-      throw new NotFoundError(`article with an id ${articleId} is not found`);
-    // -----end CHECK
 
     // ----- PARSING TEXTS AND IMAGES DATA ---------
     const arrTexts: ImageOrTextArticle[] = articleJsonParseUtils(
@@ -359,7 +372,10 @@ export class EditArticleService {
         parseInt(articleId)
       );
     let updatedImage: ImageOrTextArticle[] = images
-      ? await EditArticleServiceUtils.updateExistingImages(arrImage)
+      ? await EditArticleServiceUtils.updateExistingImages(
+          arrImage,
+          parseInt(articleId)
+        )
       : [];
 
     if (newImage) {

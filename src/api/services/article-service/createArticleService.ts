@@ -13,6 +13,7 @@ import { ArticleValidation } from "../../validations/articleValidation";
 import { Validation } from "../../validations/validation";
 import { articleJsonParseUtils } from "../../utils/articleJsonParseUtils";
 import { ArticleMulterRequest } from "../../models/multerModel";
+import { BadRequestError } from "../../errors/BadRequestError";
 
 export class CreateArticleService {
   static async createArticle(
@@ -28,15 +29,17 @@ export class CreateArticleService {
     const bodyRequest: CreateArticleRequest =
       request.body as CreateArticleRequest;
 
-    const { thumbnail, image } = request.files as {
+    const { thumbnail, image } = (request.files || {}) as {
       [fieldname: string]: Express.Multer.File[];
     };
+    if (!thumbnail) throw new BadRequestError("upload thumbnail please");
+
     const thumbnail_alt = thumbnail[0].filename;
+    console.log(thumbnail_alt);
     const thumbnailUrl = `http://example.com/${thumbnail_alt}`;
 
     const rawData = {
       title: bodyRequest.title,
-      thumbnail: thumbnailUrl,
       textArticle: bodyRequest.textArticle,
     };
     const data = Validation.validate(ArticleValidation.CREATE, rawData);
