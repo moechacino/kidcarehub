@@ -36,6 +36,8 @@ export class LoginService {
       {
         _id: writer.id,
         username: writer.username,
+        name: writer.name,
+        email: writer.email,
         role: "writer",
       },
       SECRET_KEY,
