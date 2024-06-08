@@ -1,6 +1,7 @@
 import jwt, { Secret, JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { Unauthenticated } from "../errors/Unauthenticated";
+import { CustomAPIError } from "../errors/CustomAPIError";
 
 export interface CustomRequest extends Request {
   user?: {
@@ -16,20 +17,32 @@ export const authenticationMiddleware = async (
   response: Response,
   next: NextFunction
 ) => {
-  const authHeader = request.headers.authorization;
-
   const SECRET_KEY: Secret = process.env.JWT_SECRET || "anjay secret";
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    throw new Unauthenticated("no token provided");
-  }
-  const token = authHeader.split(" ")[1];
 
+  let token: string;
+
+  if (request.cookies["token"]) {
+    token = request.cookies["token"];
+  } else {
+    const authHeader = request.headers.authorization || null;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      throw new Unauthenticated("no token provided");
+    }
+
+    token = authHeader.split(" ")[1];
+  }
   try {
     const decoded: any = jwt.verify(token, SECRET_KEY);
     const { _id, name, phoneNumber, role } = decoded;
     (request as CustomRequest).user = { _id, name, phoneNumber, role };
     next();
-  } catch (error) {
-    throw new Unauthenticated("No access");
+  } catch (err) {
+    if (err instanceof jwt.TokenExpiredError) {
+      throw new Unauthenticated("Token is expired");
+    } else if (err instanceof jwt.JsonWebTokenError) {
+      throw new Unauthenticated("Token is invalid");
+    } else {
+      throw new Error("something went wrong try again later");
+    }
   }
 };

@@ -2,8 +2,9 @@ import { prismaClient } from "../../config/database";
 import { Unauthenticated } from "../errors/Unauthenticated";
 import { Request, Response, NextFunction } from "express";
 import { CustomRequest } from "./auth";
+import { ArticleMulterRequest } from "../models/multerModel";
 export const verifyToken = async (
-  request: CustomRequest,
+  request: CustomRequest | ArticleMulterRequest,
   response: Response,
   next: NextFunction
 ) => {
