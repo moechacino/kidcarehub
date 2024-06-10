@@ -13,4 +13,9 @@ export class WriterValidation {
     username: z.string().min(1).max(50),
     password: z.string().min(1).max(100),
   });
+
+  static readonly CHANGE_PASSWORD: ZodType = z.object({
+    password: z.string().min(1).max(100),
+    newPassword: z.string().min(1).max(100),
+  });
 }
