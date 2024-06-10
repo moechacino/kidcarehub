@@ -24,4 +24,13 @@ writerRouter
     WriterController.logout
   );
 
+writerRouter
+  .route("/change-password")
+  .patch(
+    authenticationMiddleware,
+    verifyToken,
+    OnlyAccessedBy.writer,
+    WriterController.changePassword
+  );
+
 export default writerRouter;
