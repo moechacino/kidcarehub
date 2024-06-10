@@ -1,6 +1,6 @@
 import { articleJsonParseUtils } from "../src/api/utils/articleJsonParseUtils";
 import { prismaClient } from "../src/config/database";
-
+import bcrypt from "bcrypt";
 const addAdmin = async () => {
   const isExist = await prismaClient.admin.findUnique({
     where: {
@@ -23,7 +23,7 @@ const addWriter = async () => {
     phone: "081234",
     email: "sayuti@gmail.com",
     username: "sayuti",
-    password: "qwerty",
+    password: bcrypt.hashSync("qwerty", 10),
   };
 
   await prismaClient.writer.create({
@@ -37,7 +37,7 @@ const addConsultant = async () => {
     email: "bob@gmail.com",
     phone: "0812345",
     username: "bob",
-    password: "qwerty",
+    password: bcrypt.hashSync("qwerty", 10),
     profession: "Dokter Anak",
     photoProfileUrl:
       "https://instagram.fsub9-1.fna.fbcdn.net/v/t51.2885-19/443499280_955905889357006_4091478929963594954_n.jpg?stp=dst-jpg_s150x150&_nc_ht=instagram.fsub9-1.fna.fbcdn.net&_nc_cat=110&_nc_ohc=wbUXUd__azYQ7kNvgEckZeK&edm=APHcPcMBAAAA&ccb=7-5&oh=00_AYDCBBdesyhRJeuMK4sYzXXFnB6xdlsP3exXA_qc_RAfng&oe=666CF9A6&_nc_sid=cf751b",
@@ -55,7 +55,7 @@ const addUser = async () => {
   const data = {
     phone: "0812321",
     name: "Alice",
-    password: "qwerty",
+    password: bcrypt.hashSync("qwerty", 10),
     photoProfile:
       "https://scontent.fsub9-1.fna.fbcdn.net/v/t1.6435-1/74910718_1193858064136419_260154484175405056_n.jpg?stp=dst-jpg_p200x200&_nc_cat=109&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeGLjSRAUmjM4kxyAu3WVJ1k5-odb_RqwmLn6h1v9GrCYvW6FMH0NAQn9-q1PxX9xLJOjAmtdNxQ2G-MgfzGxwJP&_nc_ohc=4fHyJpSsxqgQ7kNvgGK7VP0&_nc_ht=scontent.fsub9-1.fna&oh=00_AYCWVjtinWsF91kTdqFU5PZjBFMFE-nZYPFmGOZXuhSaFg&oe=668E9150",
   };
@@ -140,11 +140,11 @@ const addArticle = async () => {
 
 (async () => {
   try {
-    await addAdmin;
-    await addWriter;
-    await addUser;
-    await addConsultant;
-    await addArticle;
+    await addAdmin();
+    await addWriter();
+    await addUser();
+    await addConsultant();
+    await addArticle();
   } catch (error) {
     console.error(error);
     process.exit(1);
