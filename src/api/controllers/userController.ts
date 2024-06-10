@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import {
+  ChangePasswordUserRequest,
   CreateUserRequest,
   LoginUserRequest,
   UserResponse,
@@ -65,5 +66,25 @@ export class UserController {
     } catch (error) {
       next(error);
     }
+  }
+
+  static async changePassword(
+    request: CustomRequest,
+    response: Response,
+    next: NextFunction
+  ) {
+    const _id = request.user?._id!;
+    const changePasswordRequest: ChangePasswordUserRequest =
+      request.body as ChangePasswordUserRequest;
+
+    const changePasswordResponse = await UserService.changePassword(
+      changePasswordRequest,
+      _id
+    );
+
+    response.status(200).json({
+      success: true,
+      data: changePasswordResponse,
+    });
   }
 }
