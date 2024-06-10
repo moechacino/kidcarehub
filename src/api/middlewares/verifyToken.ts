@@ -3,6 +3,7 @@ import { Unauthenticated } from "../errors/Unauthenticated";
 import { Request, Response, NextFunction } from "express";
 import { CustomRequest } from "./auth";
 import { ArticleMulterRequest } from "../models/multerModel";
+import { NotFoundError } from "../errors/NotFoundError";
 export const verifyToken = async (
   request: CustomRequest | ArticleMulterRequest,
   response: Response,
@@ -32,8 +33,16 @@ export const verifyToken = async (
         id: _id,
       },
     });
+  } else if (role === "consultant") {
+    authenticatedUser = await prismaClient.consultant.findUnique({
+      where: {
+        id: _id,
+      },
+    });
   }
 
+  if (!authenticatedUser)
+    throw new NotFoundError("Your Id is not found, You are not registered");
   if (authenticatedUser!.token) {
     if (token === authenticatedUser!.token) {
       next();

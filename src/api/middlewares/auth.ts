@@ -48,6 +48,12 @@ export const authenticationMiddleware = async (
       const { _id, username } = decoded;
       (request as CustomRequest).user = { _id, username, role };
       next();
+    } else if (role === "consultant") {
+      const { _id, username, name } = decoded;
+      (request as CustomRequest).user = { _id, username, name, role };
+      next();
+    } else {
+      throw new Unauthenticated("No access");
     }
   } catch (err) {
     if (err instanceof jwt.TokenExpiredError) {
