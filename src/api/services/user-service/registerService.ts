@@ -18,7 +18,7 @@ export class RegisterService {
 
     const totalUserCount: number = await prismaClient.user.count({
       where: {
-        phoneNumber: registerRequest.phoneNumber,
+        phone: registerRequest.phone,
       },
     });
 

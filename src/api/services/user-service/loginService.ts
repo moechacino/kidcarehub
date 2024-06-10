@@ -20,7 +20,7 @@ export class LoginService {
 
     let user = await prismaClient.user.findUnique({
       where: {
-        phoneNumber: loginRequest.phoneNumber,
+        phone: loginRequest.phone,
       },
     });
 
@@ -36,7 +36,7 @@ export class LoginService {
       {
         _id: user.id,
         name: user.name,
-        phoneNumber: user.phoneNumber,
+        phone: user.phone,
         role: "user",
       },
       SECRET_KEY,

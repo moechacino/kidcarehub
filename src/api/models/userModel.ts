@@ -1,7 +1,7 @@
 import { User } from "@prisma/client";
 
 export type CreateUserRequest = {
-  phoneNumber: string;
+  phone: string;
   name: string;
   password: string;
 };
@@ -13,20 +13,20 @@ export type ChangePasswordUserRequest = {
 
 export type UserResponse = {
   id: number;
-  phoneNumber: string;
+  phone: string;
   name: string;
   token?: string | null;
 };
 
 export type LoginUserRequest = {
-  phoneNumber: string;
+  phone: string;
   password: string;
 };
 
 export function toUserResponse(user: User): UserResponse {
   return {
     name: user.name,
-    phoneNumber: user.phoneNumber,
+    phone: user.phone,
     id: user.id,
   };
 }
