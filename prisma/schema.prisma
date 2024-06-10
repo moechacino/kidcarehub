@@ -15,7 +15,7 @@ datasource db {
 
 model User {
   id           Int     @unique @default(autoincrement())
-  phoneNumber  String  @unique @db.VarChar(20)
+  phone  String  @unique @db.VarChar(20)
   name         String  @db.VarChar(100)
   password     String  @db.VarChar(100)
   photoProfile String? @db.Text
@@ -41,7 +41,7 @@ model Consultant {
   id              Int     @unique @default(autoincrement())
   name            String  @db.VarChar(100)
   email           String  @db.VarChar(50)
-  phoneNumber     String  @unique @db.VarChar(20)
+  phone     String  @unique @db.VarChar(20)
   username        String  @unique @db.VarChar(50)
   password        String  @db.VarChar(100)
   profession      String  @db.VarChar(30)
