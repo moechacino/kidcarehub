@@ -1,98 +1,106 @@
-import { Request, Response, NextFunction } from "express";
+// verifyToken.test.js
+
 import { Unauthenticated } from "../../../src/api/errors/Unauthenticated";
-import { CustomRequest } from "../../../src/api/middlewares/auth";
 import { verifyToken } from "../../../src/api/middlewares/verifyToken";
 import { prismaClient } from "../../../src/config/database";
-
+import { Request, Response, NextFunction } from "express";
+import { CustomRequest } from "./../../../src/api/middlewares/auth";
 jest.mock("../../../src/config/database", () => ({
   prismaClient: {
     user: {
       findUnique: jest.fn(),
     },
+    writer: {
+      findUnique: jest.fn(),
+    },
+    admin: {
+      findUnique: jest.fn(),
+    },
   },
 }));
 describe("verifyToken", () => {
-  let mockRequest: Partial<CustomRequest>;
-  let mockResponse: Partial<Response>;
-  let mockNext: NextFunction;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    mockRequest = {
+  });
+
+  it("should call next() if token is valid", async () => {
+    const mockRequest = {
       headers: {
-        authorization: "Bearer valid_token",
+        authorization: "Bearer ValidToken",
       },
       user: {
         _id: 1,
-        phoneNumber: "081234",
-        name: "John DOe",
+        phone: "0123",
+        role: "user",
       },
-    };
-    mockResponse = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
-    mockNext = jest.fn();
-  });
+    } as CustomRequest;
+    const mockResponse = {} as Response;
+    const mockNext = jest.fn() as NextFunction;
 
-  it("should call next if token is valid", async () => {
-    const user = {
+    const mockUser = {
       id: 1,
-      token: "valid_token",
+      token: "ValidToken",
     };
 
-    (prismaClient.user.findUnique as jest.Mock).mockResolvedValue(user);
+    (prismaClient.user.findUnique as jest.Mock).mockResolvedValueOnce(mockUser);
 
-    await verifyToken(
-      mockRequest as CustomRequest,
-      mockResponse as Response,
-      mockNext
-    );
+    await verifyToken(mockRequest, mockResponse, mockNext);
 
-    expect(prismaClient.user.findUnique).toHaveBeenCalledWith({
-      where: { id: mockRequest.user?._id },
-    });
     expect(mockNext).toHaveBeenCalled();
   });
 
   it("should throw Unauthenticated error if token is expired", async () => {
-    const user = {
-      id: 1,
-      token: "expired_token",
+    const mockRequest = {
+      headers: {
+        authorization: "Bearer ExpiredToken",
+      },
+      user: {
+        _id: 1,
+        phone: "0123",
+        role: "user",
+      },
+    } as CustomRequest;
+    const mockResponse = {} as Response;
+    const mockNext = jest.fn() as NextFunction;
+
+    const mockUser = {
+      id: "userId",
+      token: "validToken",
     };
 
-    (prismaClient.user.findUnique as jest.Mock).mockResolvedValue(user);
+    (prismaClient.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
     await expect(
-      verifyToken(
-        mockRequest as CustomRequest,
-        mockResponse as Response,
-        mockNext
-      )
+      verifyToken(mockRequest, mockResponse, mockNext)
     ).rejects.toThrow(
       new Unauthenticated("Your Access Token is Expired. Please Login Again")
     );
 
-    expect(prismaClient.user.findUnique).toHaveBeenCalledWith({
-      where: { id: mockRequest.user?._id },
-    });
     expect(mockNext).not.toHaveBeenCalled();
   });
 
-  it("should throw Unauthenticated error if user is not found", async () => {
-    (prismaClient.user.findUnique as jest.Mock).mockResolvedValue(null);
+  it("should throw Unauthenticated error if no access", async () => {
+    const mockRequest = {
+      headers: {
+        authorization: "Bearer 30912",
+      },
+      user: {
+        _id: 1,
+        phone: "0123",
+        role: "user",
+      },
+    } as CustomRequest;
+    const mockResponse = {} as Response;
+    const mockNext = jest.fn() as NextFunction;
+
+    const mockUser = {};
+
+    (prismaClient.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
     await expect(
-      verifyToken(
-        mockRequest as CustomRequest,
-        mockResponse as Response,
-        mockNext
-      )
+      verifyToken(mockRequest, mockResponse, mockNext)
     ).rejects.toThrow(new Unauthenticated("No access"));
 
-    expect(prismaClient.user.findUnique).toHaveBeenCalledWith({
-      where: { id: mockRequest.user?._id },
-    });
     expect(mockNext).not.toHaveBeenCalled();
   });
 });

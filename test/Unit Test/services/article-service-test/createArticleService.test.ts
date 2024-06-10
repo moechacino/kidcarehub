@@ -38,7 +38,7 @@ describe("CreateArticle Service Test", () => {
       user: {
         _id: 1,
         name: "John Doe",
-        phoneNumber: "081234",
+        phone: "081234",
         role: "writer",
       },
       body: {
@@ -161,7 +161,6 @@ describe("CreateArticle Service Test", () => {
 
     expect(Validation.validate).toHaveBeenCalledWith(ArticleValidation.CREATE, {
       title: "Test Article",
-      thumbnail: "http://example.com/thumbnail.jpg",
       textArticle: JSON.stringify([
         { position: 1, text: "First Text" },
         { position: 2, text: "Second Text" },

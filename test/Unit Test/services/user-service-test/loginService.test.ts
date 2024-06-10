@@ -26,7 +26,7 @@ describe("Login Service Test", () => {
 
   function getMockRequest(): LoginUserRequest {
     return {
-      phoneNumber: "081234",
+      phone: "081234",
       password: "rahasia",
     } as LoginUserRequest;
   }
@@ -35,7 +35,7 @@ describe("Login Service Test", () => {
     return {
       id: 1,
       name: "John Doe",
-      phoneNumber: "081234",
+      phone: "081234",
       token: null,
     };
   }
@@ -54,7 +54,7 @@ describe("Login Service Test", () => {
       {
         _id: 1,
         name: "John Doe",
-        phoneNumber: mockRequest.phoneNumber,
+        phone: mockRequest.phone,
       },
       "Secret_Key",
       { expiresIn: "1000" }
@@ -72,7 +72,7 @@ describe("Login Service Test", () => {
     expect(result).toEqual({
       id: 1,
       name: "John Doe",
-      phoneNumber: mockRequest.phoneNumber,
+      phone: mockRequest.phone,
       token: token,
     });
   });

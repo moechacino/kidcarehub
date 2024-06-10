@@ -3,9 +3,11 @@ import { ArticleService } from "../../../../src/api/services/article-service";
 import { Validation } from "../../../../src/api/validations/validation";
 import { prismaClient } from "../../../../src/config/database";
 import { Request, Response, NextFunction } from "express";
+
 import { Readable } from "stream";
 import fs from "fs";
 import path from "path";
+import { NotFoundError } from "../../../../src/api/errors/NotFoundError";
 jest.mock("fs");
 jest.mock("path");
 jest.mock("../../../../src/config/database", () => ({
@@ -17,6 +19,7 @@ jest.mock("../../../../src/config/database", () => ({
     },
     textArticle: {
       findUnique: jest.fn(),
+      findFirst: jest.fn(),
       update: jest.fn(),
       create: jest.fn(),
       delete: jest.fn(),
@@ -24,6 +27,7 @@ jest.mock("../../../../src/config/database", () => ({
       deleteMany: jest.fn(),
     },
     imageArticle: {
+      findFirst: jest.fn(),
       findUnique: jest.fn(),
       update: jest.fn(),
       create: jest.fn(),
@@ -134,11 +138,11 @@ describe("editArticleService Test", () => {
     jest.spyOn(fs, "unlinkSync").mockReturnValue(undefined);
 
     // mock update data text
-    (prismaClient.textArticle.findUnique as jest.Mock).mockResolvedValueOnce({
+    (prismaClient.textArticle.findFirst as jest.Mock).mockResolvedValueOnce({
       id: 1,
       text: "text 1",
     });
-    (prismaClient.textArticle.findUnique as jest.Mock).mockResolvedValueOnce({
+    (prismaClient.textArticle.findFirst as jest.Mock).mockResolvedValueOnce({
       id: 2,
       text: "text 2",
     });
@@ -161,8 +165,14 @@ describe("editArticleService Test", () => {
 
     // mock update data images
 
+    (prismaClient.imageArticle.findFirst as jest.Mock).mockResolvedValueOnce(
+      JSON.parse(mockRequest.body.images)[0]
+    );
     (prismaClient.imageArticle.update as jest.Mock).mockResolvedValueOnce(
       JSON.parse(mockRequest.body.images)[0]
+    );
+    (prismaClient.imageArticle.findFirst as jest.Mock).mockResolvedValueOnce(
+      JSON.parse(mockRequest.body.images)[1]
     );
     (prismaClient.imageArticle.update as jest.Mock).mockResolvedValueOnce(
       JSON.parse(mockRequest.body.images)[1]

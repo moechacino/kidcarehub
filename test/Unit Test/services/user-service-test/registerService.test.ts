@@ -25,7 +25,7 @@ describe("register Service Test", () => {
 
   function getMockRequest(): CreateUserRequest {
     return {
-      phoneNumber: "081234",
+      phone: "081234",
       name: "John Doe",
       password: "rahasia",
     } as CreateUserRequest;
@@ -49,7 +49,7 @@ describe("register Service Test", () => {
 
     expect(result).toEqual({
       id: 1,
-      phoneNumber: "081234",
+      phone: "081234",
       name: "John Doe",
     });
   });
