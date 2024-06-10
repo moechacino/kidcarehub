@@ -68,7 +68,7 @@ const addUser = async () => {
 const addArticle = async () => {
   const articleData = [
     {
-      createdAt: "2024-04-01",
+      createdAt: "2024-04-01T00:00:00Z",
       title: "TES SATU",
       thumbnail:
         "https://cdn.pixabay.com/photo/2015/03/17/02/01/cubes-677092_1280.png",
@@ -84,7 +84,7 @@ const addArticle = async () => {
       ]`,
     },
     {
-      createdAt: "2024-03-24",
+      createdAt: "2024-03-24T00:00:00Z",
       title: "TES DUA",
       category: "technology",
       thumbnail:
