@@ -17,4 +17,12 @@ userRouter
     UserController.logout
   );
 
+userRouter
+  .route("/change-password")
+  .patch(
+    authenticationMiddleware,
+    verifyToken,
+    OnlyAccessedBy.user,
+    UserController.changePassword
+  );
 export default userRouter;
