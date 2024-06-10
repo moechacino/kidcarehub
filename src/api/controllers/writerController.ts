@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import {
+  ChangePasswordWriterRequest,
   CreateWriterRequest,
   LoginWriterRequest,
   WriterResponse,
@@ -63,5 +64,25 @@ export class WriterController {
     } catch (error) {
       next(error);
     }
+  }
+
+  static async changePassword(
+    request: CustomRequest,
+    response: Response,
+    next: NextFunction
+  ) {
+    const _id = request.user?._id!;
+    const changePasswordRequest: ChangePasswordWriterRequest =
+      request.body as ChangePasswordWriterRequest;
+
+    const changePasswordResponse = await WriterService.changePassword(
+      changePasswordRequest,
+      _id
+    );
+
+    response.status(200).json({
+      success: true,
+      data: changePasswordResponse,
+    });
   }
 }
