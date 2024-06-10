@@ -23,6 +23,11 @@ export type CreateWriterRequest = {
   password: string;
 };
 
+export type ChangePasswordWriterRequest = {
+  password: string;
+  newPassword: string;
+};
+
 export type WriterResponse = {
   id: number;
   name: string;
