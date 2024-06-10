@@ -6,6 +6,11 @@ export type CreateUserRequest = {
   password: string;
 };
 
+export type ChangePasswordUserRequest = {
+  password: string;
+  newPassword: string;
+};
+
 export type UserResponse = {
   id: number;
   phoneNumber: string;
