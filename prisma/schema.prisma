@@ -13,22 +13,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id           Int     @unique @default(autoincrement())
-  phone  String  @unique @db.VarChar(20)
-  name         String  @db.VarChar(100)
-  password     String  @db.VarChar(100)
-  photoProfile String? @db.Text
-  token        String? @db.VarChar(300)
-
-  createdAt DateTime @default(now()) @db.Timestamp(0)
-  updatedAt DateTime @updatedAt @db.Timestamp(0)
-
-  @@map("user")
-}
-
 model Admin {
-  id        Int      @unique @default(autoincrement())
+  id        Int      @id @unique @default(autoincrement())
   username  String   @unique @db.VarChar(50)
   password  String   @db.VarChar(100)
   token     String?  @db.VarChar(300)
@@ -38,10 +24,10 @@ model Admin {
 }
 
 model Consultant {
-  id              Int     @unique @default(autoincrement())
+  id              Int     @id @unique @default(autoincrement())
   name            String  @db.VarChar(100)
   email           String  @db.VarChar(50)
-  phone     String  @unique @db.VarChar(20)
+  phone           String  @unique @db.VarChar(20)
   username        String  @unique @db.VarChar(50)
   password        String  @db.VarChar(100)
   profession      String  @db.VarChar(30)
@@ -54,7 +40,61 @@ model Consultant {
   createdAt DateTime @default(now()) @db.Timestamp(0)
   updatedAt DateTime @updatedAt @db.Timestamp(0)
 
+  userConsultants UserConsultant[]
+
   @@map("consultant")
+}
+
+model UserConsultant {
+  id           Int         @id @unique @default(autoincrement())
+  userId       Int
+  consultantId Int
+  user         User        @relation(fields: [userId], references: [id])
+  consultant   Consultant  @relation(fields: [consultantId], references: [id])
+  groupChat    GroupChat[]
+  createdAt    DateTime    @default(now()) @db.Timestamp(0)
+  updatedAt    DateTime    @updatedAt @db.Timestamp(0)
+
+  @@map("chatUserConsultant")
+}
+
+model GroupChat {
+  id               Int            @id @unique @default(autoincrement())
+  roomName         String
+  messages         Message[]
+  userConsultantId Int
+  userConsultant   UserConsultant @relation(fields: [userConsultantId], references: [id], onDelete: Cascade)
+
+  @@map("groupChat")
+}
+
+model Message {
+  id          Int       @id @unique @default(autoincrement())
+  groupChatId Int
+  senderId    Int
+  senderRole  String
+  message     String    @db.Text
+  groupChat   GroupChat @relation(fields: [groupChatId], references: [id])
+  createdAt   DateTime  @default(now()) @db.Timestamp(0)
+  updatedAt   DateTime  @updatedAt @db.Timestamp(0)
+
+  @@map("message")
+}
+
+model User {
+  id           Int     @id @unique @default(autoincrement())
+  phone        String  @unique @db.VarChar(20)
+  name         String  @db.VarChar(100)
+  password     String  @db.VarChar(100)
+  photoProfile String? @db.Text
+  token        String? @db.VarChar(300)
+
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @db.Timestamp(0)
+
+  userConsultants UserConsultant[]
+
+  @@map("user")
 }
 
 model Writer {
@@ -73,16 +113,16 @@ model Writer {
 }
 
 model Article {
-  id           Int            @id @unique @default(autoincrement())
-  writerId     Int
-  writer       Writer         @relation(fields: [writerId], references: [id])
-  title        String         @db.VarChar(50)
-  thumbnail    String         @db.Text
+  id            Int            @id @unique @default(autoincrement())
+  writerId      Int
+  writer        Writer         @relation(fields: [writerId], references: [id])
+  title         String         @db.VarChar(50)
+  thumbnail     String         @db.Text
   thumbnail_alt String
-  textArticle  TextArticle[]
-  imageArticle ImageArticle[]
-  createdAt    DateTime       @default(now()) @db.Timestamp(0)
-  updatedAt    DateTime       @updatedAt @db.Timestamp(0)
+  textArticle   TextArticle[]
+  imageArticle  ImageArticle[]
+  createdAt     DateTime       @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime       @updatedAt @db.Timestamp(0)
 
   @@map("article")
 }
