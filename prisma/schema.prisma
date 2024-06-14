@@ -35,7 +35,7 @@ model Consultant {
   alumnus         String? @db.VarChar(30)
   strNumber       String  @db.VarChar(25)
   workPlace       String? @db.VarChar(30)
-
+  groupChat GroupChat[]
   token     String?  @db.VarChar(300)
   createdAt DateTime @default(now()) @db.Timestamp(0)
   updatedAt DateTime @updatedAt @db.Timestamp(0)
@@ -51,7 +51,7 @@ model UserConsultant {
   consultantId Int
   user         User        @relation(fields: [userId], references: [id])
   consultant   Consultant  @relation(fields: [consultantId], references: [id])
-  groupChat    GroupChat[]
+
   createdAt    DateTime    @default(now()) @db.Timestamp(0)
   updatedAt    DateTime    @updatedAt @db.Timestamp(0)
 
@@ -61,9 +61,15 @@ model UserConsultant {
 model GroupChat {
   id               Int            @id @unique @default(autoincrement())
   roomName         String
+   userId       Int
+  consultantId Int
+  user         User        @relation(fields: [userId], references: [id])
+  consultant   Consultant  @relation(fields: [consultantId], references: [id])
+  startAt      DateTime @default(now()) @db.Timestamp(0)
+  endAt DateTime 
+  createdAt    DateTime    @default(now()) @db.Timestamp(0)
+  updatedAt    DateTime    @updatedAt @db.Timestamp(0)
   messages         Message[]
-  userConsultantId Int
-  userConsultant   UserConsultant @relation(fields: [userConsultantId], references: [id], onDelete: Cascade)
 
   @@map("groupChat")
 }
@@ -88,7 +94,7 @@ model User {
   password     String  @db.VarChar(100)
   photoProfile String? @db.Text
   token        String? @db.VarChar(300)
-
+  groupChat GroupChat[]
   createdAt DateTime @default(now()) @db.Timestamp(0)
   updatedAt DateTime @updatedAt @db.Timestamp(0)
 
