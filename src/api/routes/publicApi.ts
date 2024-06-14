@@ -4,6 +4,7 @@ import writerRouter from "./writer";
 import articleRouter from "./article";
 import adminRouter from "./admin";
 import consultantRouter from "./consultant";
+import chatRouter from "./chat";
 export const publicRouter = express.Router();
 
 publicRouter.use("/user", userRouter);
@@ -11,3 +12,4 @@ publicRouter.use("/writer", writerRouter);
 publicRouter.use("/article", articleRouter);
 publicRouter.use("/admin", adminRouter);
 publicRouter.use("/consultant", consultantRouter);
+publicRouter.use("/chat", chatRouter);
