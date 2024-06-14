@@ -1,0 +1,178 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>CONSULTANT</title>
+    <style>
+      body {
+        margin: 0;
+        padding-bottom: 3rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+      }
+
+      #form {
+        background: rgba(0, 0, 0, 0.15);
+        padding: 0.25rem;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        height: 3rem;
+        box-sizing: border-box;
+        backdrop-filter: blur(10px);
+      }
+
+      #input,
+      #groupChatId {
+        border: none;
+        padding: 0 1rem;
+        border-radius: 2rem;
+        margin: 0.25rem;
+      }
+
+      #input:focus,
+      #groupChatId:focus {
+        outline: none;
+      }
+
+      #form > button {
+        background: #333;
+        border: none;
+        padding: 0 1rem;
+        margin: 0.25rem;
+        border-radius: 3px;
+        outline: none;
+        color: #fff;
+      }
+
+      #messages {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      #messages > li {
+        padding: 0.5rem 1rem;
+      }
+
+      #messages > li:nth-child(odd) {
+        background: #efefef;
+      }
+
+      #tokenForm {
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #tokenInput {
+        padding: 0.5rem;
+        border-radius: 5px;
+        margin-right: 0.5rem;
+        border: 1px solid #ccc;
+      }
+
+      #saveTokenButton {
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        border: none;
+        background-color: #333;
+        color: white;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="initChatForm" action="">
+      <input id="groupChatId" type="text" placeholder="Enter Group Chat ID" />
+
+      <button id="initChatButton">Initiate Chat</button>
+    </form>
+    <div id="error" class="error" style="display: none"></div>
+    <div id="tokenForm">
+      <input id="tokenInput" type="text" placeholder="Enter JWT token" />
+      <button id="saveTokenButton">Save Token</button>
+    </div>
+
+    <ul id="messages"></ul>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" placeholder="Type your message..." />
+      <button>Send</button>
+    </form>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+      let token = localStorage.getItem("token") || "";
+
+      document
+        .getElementById("initChatButton")
+        .addEventListener("click", (e) => {
+          e.preventDefault();
+          const groupChatId = document.getElementById("groupChatId").value;
+          if (groupChatId) {
+            localStorage.setItem("groupChatId", parseInt(groupChatId));
+            alert("groupchatId set");
+          } else {
+            alert("set groupchatId please");
+          }
+        });
+
+      document
+        .getElementById("saveTokenButton")
+        .addEventListener("click", (e) => {
+          e.preventDefault();
+          const tokenInput = document.getElementById("tokenInput").value;
+          if (tokenInput) {
+            token = tokenInput;
+            localStorage.setItem("token", token);
+
+            alert("Token saved!");
+          } else {
+            alert("Please enter a token.");
+          }
+        });
+
+      function initializeSocket() {
+        const socket = io(`http://localhost:9000`, {
+          auth: {
+            token: token,
+          },
+        });
+        const groupChatId = localStorage.getItem("groupChatId");
+        // for (let i = 0; i <= 1; i++) {
+        //   socket.emit("join", groupChatId);
+        // }
+        socket.emit("join", groupChatId);
+        document
+          .getElementById("form")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            const input = document.getElementById("input");
+            if (input.value) {
+              socket.emit("chat", groupChatId, input.value);
+              input.value = "";
+            }
+          });
+
+        socket.on(`chat`, function (msg, senderId) {
+          let item = document.createElement("li");
+          item.textContent = senderId + ": " + msg;
+          document.getElementById("messages").appendChild(item);
+          window.scrollTo(0, document.body.scrollHeight);
+        });
+
+        socket.on("error", function (err) {
+          const errorDiv = document.getElementById("error");
+          errorDiv.textContent = err.message;
+          errorDiv.style.display = "block";
+        });
+      }
+
+      if (token) {
+        initializeSocket();
+      }
+    </script>
+  </body>
+</html>
