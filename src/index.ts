@@ -7,9 +7,32 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import bodyParser = require("body-parser");
 import notFoundMiddleware from "./api/middlewares/not-found";
+import { Server, Socket } from "socket.io";
+import { createServer } from "node:http";
+import { AuthSocket, AuthenticatedSocket } from "./api/middlewares/authSocket";
+import WebSockets from "./api/utils/WebSocket";
+
 //For env File
 dotenv.config();
-export const app: Application = express();
+const app: Application = express();
+const server = createServer(app);
+// web socket
+const io = new Server(server, {
+  connectionStateRecovery: {},
+});
+(globalThis as any).io = io;
+const WebSocket = new WebSockets(io);
+io.use(
+  AuthSocket.authenticateSocket as (
+    socket: Socket,
+    next: (err?: Error) => void
+  ) => void
+);
+
+io.on("connection", (socket) => {
+  WebSocket.connection(socket as AuthenticatedSocket);
+});
+
 const port = process.env.PORT || 9000;
 app.use(
   cors({
@@ -21,16 +44,22 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
 app.use("/api", publicRouter);
+
+app.get("/test/chat/user", (req, res) => {
+  res.sendFile(__dirname + "/public/user.html");
+});
+app.get("/test/chat/consultant", (req, res) => {
+  res.sendFile(__dirname + "/public/consultant.html");
+});
+app.get("/test/chat/connect", (req, res) => {
+  res.sendFile(__dirname + "/public/chatConnect.html");
+});
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
-// app.get("/", (req: Request, res: Response) => {
-//   res.send("Welcome");
-// });
-
 const start = async () => {
   try {
-    app.listen(port, () => {
+    server.listen(port, () => {
       console.log(`server is listening on http://localhost:${port}`);
     });
   } catch (error) {
